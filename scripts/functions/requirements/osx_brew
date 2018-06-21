@@ -318,25 +318,30 @@ requirements_osx_brew_libs_default()
       ;;
   esac
 
-  # OpenSSL version depends on the version of Ruby being installed
-  case "$1" in
-    (ree-1.8*)
-      brew_openssl_package="openssl"
-      ;;
-
-    (ruby-2.3*|ruby-2.2*|ruby-2.1*|ruby-2.0*|ruby-1.9*|ruby-1.8*)
-      brew_openssl_package="openssl"
-      ;;
-
-    (*)
-      brew_openssl_package="openssl@1.1"
-      ;;
-  esac
+  brew_openssl_package="$(requirements_osx_brew_openssl_package "$1")"
   brew_libs_conf+=( "$brew_openssl_package" )
 
   undesired_check openssl098 || return $?
 
   requirements_check "${brew_libs[@]}" "${brew_libs_conf[@]}" || return $?
+}
+
+requirements_osx_brew_openssl_package()
+{
+  # OpenSSL version depends on the version of Ruby being installed
+  case "$1" in
+    (ree-1.8*)
+      echo openssl
+      ;;
+
+    (ruby-2.3*|ruby-2.2*|ruby-2.1*|ruby-2.0*|ruby-1.9*|ruby-1.8*)
+      echo openssl
+      ;;
+
+    (*)
+      echo openssl@1.1
+      ;;
+  esac
 }
 
 requirements_osx_brew_define()
@@ -369,7 +374,7 @@ requirements_osx_brew_define()
       ;;
 
     (truffleruby*)
-      requirements_check openssl llvm@4
+      requirements_check "$(requirements_osx_brew_openssl_package "$1")" llvm@4
       ;;
 
     (ruby*head)
