@@ -27,6 +27,8 @@ before_script:
   - ./install
   - git submodule init
   - git submodule update
+  - rvm reload
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rvm autolibs read-only; fi
 script:
   - tf --text $TEST
 env:
